@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {fenToBoard} from './Fen.js';
 var Chess = require('./chess.js').Chess;
 let sf = null;
+let chessmoves=[];
 
 function showThinkingBar(value){
     document.getElementById('thinking-bar').style.height="2px"
@@ -51,28 +52,43 @@ class ChessBoard extends Component {
             sf = eval('stockfish');
             sf.onmessage = (event) => { 
                 let message = event.data ? event.data : event;
-                console.log(message);
+                // console.log(moveResult.flags.indexOf('c'));
                 if(message.startsWith("bestmove")){
                     
                     showThinkingBar(false);
                     chess = new Chess(this.props.board);
-                    var move = message.split(" ")[1];
-                    var moveResult = chess.move(move, {sloppy: true});
                     
-                    if(moveResult.flags.indexOf('c')!=-1){
-                        document.getElementById(`cell-${move.substr(0,2)}`).classList.add('ai-bloody-footprint-in-sand');
-                        document.getElementById(`cell-${move.substr(2,4)}`).classList.add('ai-bloody-footprint-in-sand');
-                    }else{
-                        document.getElementById(`cell-${move.substr(0,2)}`).classList.add('ai-footprint-in-sand');
-                        document.getElementById(`cell-${move.substr(2,4)}`).classList.add('ai-footprint-in-sand');
-                    }
+                    var move = message.split(" ")[1];
+                    chessmoves.push(move);
+                    // console.log(move);
+                    var moveResult;
+                    if (move.length===5) {
+                        chess.move({ from: move.substr(0,2), to: move.substr(2,2), promotion: 'q' });
+                    }                   
+                else
+                     moveResult = chess.move(move, {sloppy: true});
+                    
+                    // if(moveResult.flags.indexOf('c')!=-1){
+                    //     document.getElementById(`cell-${move.substr(0,2)}`).classList.add('ai-bloody-footprint-in-sand');
+                    //     document.getElementById(`cell-${move.substr(2,4)}`).classList.add('ai-bloody-footprint-in-sand');
+                    // }else{
+                    //     document.getElementById(`cell-${move.substr(0,2)}`).classList.add('ai-footprint-in-sand');
+                    //     document.getElementById(`cell-${move.substr(2,4)}`).classList.add('ai-footprint-in-sand');
+                    // }
                     this.props.onMove(chess.fen())
-                    if(!(chess.turn()===this.state.userColor)){
-                        sf.postMessage("position fen "+chess.fen())
-                        sf.postMessage(`go depth ${this.props.intelligenceLevel}`)
+                    // if(!(chess.turn()===this.state.userColor)){
+                    //     sf.postMessage("position fen "+chess.fen())
+                    //     sf.postMessage(`go depth ${this.props.intelligenceLevel}`)
+                    // }
+                    
+                    if (chess.in_threefold_repetition()){
+                        alert("Game Drawn!");
+                        console.log(chessmoves);
                     }
-                    if (chess.game_over())
+                    if (chess.game_over()){
                         alert("Game Over!");
+                        console.log(chessmoves);
+                    }
                 }
                 
             }
@@ -91,7 +107,19 @@ class ChessBoard extends Component {
                 else
                     chess.move({ from: this.state.from, to: cellCode }); // if not a promotion, be normal
                 
-                    showThinkingBar(true);
+                    showThinkingBar(false);
+                chessmoves.push(this.state.from+cellCode);
+                if (chess.in_checkmate()) {
+                    // User has been checkmated (opponent wins)
+                    alert("Checkmate! You won the game.");}
+                else if (chess.in_stalemate()) {
+                        // Stalemate condition (draw)
+                        alert("Stalemate! The game is a draw.");
+                }
+                else if (chess.game_over()){
+                    alert("Game Over!");
+                    console.log(chessmoves);
+                }
                 //-----------------PUT AI HERE-------------------------------
                 // var moves = chess.moves();
                 // var move = moves[Math.floor(Math.random() * moves.length)];
@@ -153,10 +181,6 @@ class ChessBoard extends Component {
 class Cell extends Component {
     constructor(props) {
         super(props);
-    }
-
-    onCellClick() {
-        alert("hello");
     }
     render() {
         return (<span id={"cell-" + this.props.cellCode} onClick={() => { this.props.onClick(this.props.cellCode) }} className="cell">{this.props.piece}</span>)

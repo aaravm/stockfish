@@ -3,15 +3,18 @@ let fenToBoard = (fen) => {
     let map = { 'b': 'N', 'n': 'J', 'q': 'W', 'p': 'O', 'k': 'L', 'r': 'T', 'B': 'B', 'N': 'H', 'Q': 'Q', 'P': 'P', 'K': 'K', 'R': 'R', '.': ' ' };
 
     let fenBoard = fen.split(' ')[0].split("/").join("");
+    // console.log(fenBoard," ");
+
     for (let cell = 0; cell < fenBoard.length; cell++) {
         if (!parseInt(fenBoard[cell]))
             tempRow += fenBoard[cell];
-        else {
+        else {fenBoard.length
             for (let i = 0; i < parseInt(fenBoard[cell]); i++) {
                 tempRow += "."
             }
         }
     }
+    
     let finalRow = '';
     let rowToggle = false;
     for (let i = 0; i < tempRow.length; i++) {
@@ -31,6 +34,8 @@ let fenToBoard = (fen) => {
             finalRow += _cell;
         }
     }
+
+    // console.log(fen,finalRow);
     return finalRow;
 }
 

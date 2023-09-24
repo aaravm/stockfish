@@ -20,7 +20,7 @@ class Header extends Component {
         const rightButtons = (
             <div>
                 <IconButton title="New Game" onClick={this.props.requestOpenNewGame}><svg style={{ 'width': '24px', 'height': '24px' }} viewBox="0 0 24 24">
-                    <path fill="#000000" d="M3,3H21V21H3V3M5,5V12H12V19H19V12H12V5H5Z" fill="#333" />
+                    <path fill="#000000" d="M3,3H21V21H3V3M5,5V12H12V19H19V12H12V5H5Z"/>
                 </svg></IconButton>
                 <IconButton title="AI Settings" onClick={this.props.requestOpenIntelligenceDia}>
                     <svg width="24" height="24" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg">

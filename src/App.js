@@ -68,6 +68,7 @@ class App extends Component {
 
   getFallenOnes = () => {
     var orig = "tJnWlNjTOoOoOoOoZ+Z+Z+Z++Z+Z+Z+ZZ+Z+Z+Z++Z+Z+Z+ZpPpPpPpPRhBqKbHr".toLowerCase();
+    // console.log(this.state.historicalStates[this.state.boardIndex]);
     var curr = fenToBoard(this.state.historicalStates[this.state.boardIndex]).toLowerCase();
     orig = orig.replace(/z/g,"");
     orig = orig.replace(/\+/g,"");
